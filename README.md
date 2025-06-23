@@ -47,7 +47,11 @@ cd ../frontend
 ./package.sh
 
 # 3. Install extension in browser (drag .zip to chrome://extensions/)
-# 4. Start the daemon
+# 4. Start the daemon (background mode recommended)
+# Background mode (recommended)
+splice-alt-daemon --start
+
+# Or foreground mode
 cd ../backend
 ./target/release/splice-alt-daemon watch
 
@@ -110,7 +114,6 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
 ### Basic Setup
 
 1. **Start the Daemon**:
-```bash
 # Use default directories (watches ~/Downloads)
 ./target/release/splice-alt-daemon watch
 
@@ -130,6 +133,30 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
    - Browse Splice.com normally
    - Download samples - JSON metadata files will be created automatically
    - The daemon will detect and organize them into your library
+
+### Daemon Management
+
+#### Start Background Daemon
+```bash
+splice-alt-daemon --start
+```
+
+#### Stop Background Daemon
+```bash
+splice-alt-daemon --stop
+```
+
+#### Check Daemon Status
+```bash
+splice-alt-daemon --status
+```
+
+The daemon will:
+- Run in the background without keeping a terminal open
+- Log activity to `~/.cache/splice-alt-daemon.log`
+- Store its process ID in `~/.cache/splice-alt-daemon.pid`
+- Automatically restart if the system reboots (when added to startup)
+
 
 ### Advanced Usage
 
