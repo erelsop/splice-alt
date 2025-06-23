@@ -1,6 +1,6 @@
 # Splice Alt - Automatic Sample Library Organizer
 
-A complete system for automatically organizing Splice samples into a structured library on download. Hopefully in time we will see a true Splice Desktop AppImage or something, but for now this is an alternative.
+A complete system for automatically organizing Splice samples into a structured library on download.
 
 ## 🎯 Overview
 
@@ -31,15 +31,15 @@ The daemon automatically maps samples to these Bitwig-compatible categories:
 
 **Automated Installation:**
 ```bash
-git clone <repository-url>
-cd splice-alt
+git clone https://github.com/erelsop/splice-linux-helper.git
+cd splice-linux-helper
 ./install.sh
 ```
 
 **Manual Steps:**
 ```bash
 # 1. Build the daemon
-cd splice-alt/backend
+cd splice-linux-helper/backend
 cargo build --release
 
 # 2. Package the browser extension
@@ -65,8 +65,8 @@ cd ../backend
 ### 1. Build the Daemon
 
 ```bash
-git clone <repository-url>
-cd splice-alt/backend
+git clone https://github.com/erelsop/splice-linux-helper.git
+cd splice-linux-helper/backend
 cargo build --release
 
 # Optional: Copy to system PATH
@@ -76,7 +76,7 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
 ### 2. Install Browser Extension
 
 #### Option A: Pre-packaged Extension (Recommended)
-1. Navigate to `splice-alt/frontend/`
+1. Navigate to `splice-linux-helper/frontend/`
 2. Run `./package.sh` to create the extension package
 3. Install the generated `.zip` file:
 
@@ -97,13 +97,13 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
 1. Open `chrome://extensions/`
 2. Enable "Developer mode"
 3. Click "Load unpacked"
-4. Select the `splice-alt/frontend/` directory
+4. Select the `splice-linux-helper/frontend/` directory
 
 **Firefox:**
 1. Open `about:debugging`
 2. Click "This Firefox"
 3. Click "Load Temporary Add-on"
-4. Select `splice-alt/frontend/manifest.json`
+4. Select `splice-linux-helper/frontend/manifest.json`
 
 ## 🎮 Usage
 
@@ -196,7 +196,7 @@ Use `Ctrl+Shift+S` on Splice.com to toggle the debug status panel.
 The daemon accepts command-line arguments for all paths:
 
 ```bash
-./splice-alt-daemon --help
+./target/release/splice-alt-daemon --help
 ```
 
 ### Browser Extension Settings
@@ -247,8 +247,22 @@ CREATE TABLE samples (
     mapped_category TEXT NOT NULL,
     tags TEXT, -- JSON array
     date_downloaded TEXT NOT NULL,
-    -- ... additional metadata
+    sample_id TEXT,
+    artist_name TEXT,
+    genre TEXT,
+    duration_ms INTEGER,
+    sample_rate INTEGER,
+    bit_depth INTEGER,
+    file_size INTEGER,
+    download_url TEXT,
+    preview_url TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_samples_hash ON samples(file_hash);
+CREATE INDEX idx_samples_category ON samples(mapped_category);
+CREATE INDEX idx_samples_pack ON samples(pack_name);
+CREATE INDEX idx_samples_tags ON samples(tags);
 ```
 
 ## 🔮 Future Enhancements
@@ -305,10 +319,14 @@ This project welcomes contributions! Areas for improvement:
 - Performance optimizations
 - Documentation improvements
 
+## 📄 License
+
+This project is dedicated to the public domain under the [CC0 1.0 Universal License](LICENSE).
+
 ## Disclaimer
 
 **This project is not affiliated with, endorsed by, or connected to Splice in any official way. It is a personal utility that helps users locally organize sample files they have legally downloaded via their own Splice accounts. This tool does not access, modify, or interact with Splice systems beyond observing client-side metadata and file downloads already authorized to the user. No Splice content is redistributed. Use of this tool assumes that the user adheres to Splice's Terms of Use.**
 
 ---
 
-**Happy sample organizing! 🎵** 
+**Happy sample organizing! 🎵**
