@@ -1,0 +1,99 @@
+# Rust build artifacts
+/backend/target/
+/backend/Cargo.lock
+
+# Built binaries
+splice-alt-daemon
+/backend/splice-alt-daemon
+
+# Browser extension packages
+/frontend/*.zip
+/frontend/*.crx
+/frontend/*.xpi
+
+# Database files (for testing)
+*.db
+*.sqlite
+*.sqlite3
+samples.db
+
+# Log files
+*.log
+/logs/
+
+# Configuration files (may contain sensitive paths)
+config.toml
+config.json
+.env
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Test files and directories
+/test-samples/
+/test-data/
+test_*.wav
+test_*.json
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Node.js (for potential future web interface)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Python (for potential scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+
+# Documentation build artifacts
+/docs/_build/
+/docs/site/
+
+# Package managers
+.cargo/registry/
+.cargo/git/
+
+# Future GUI frameworks
+/gui/target/
+/gui/dist/
+/gui/build/
+
+# Performance profiling
+*.prof
+perf.data*
+flamegraph.svg
+
+# Coverage reports
+tarpaulin-report.html
+lcov.info
+coverage/

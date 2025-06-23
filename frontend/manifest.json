@@ -1,0 +1,53 @@
+{
+  "manifest_version": 2,
+  "name": "Splice Alt - Sample Organizer",
+  "version": "1.0.0",
+  "description": "Automatically captures metadata from Splice downloads for organized sample libraries",
+
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "downloads",
+    "storage",
+    "activeTab",
+    "tabs",
+    "*://splice.com/*",
+    "*://*.splice.com/*",
+    "*://api.splice.com/*",
+    "*://*.api.splice.com/*"
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://splice.com/*",
+        "*://*.splice.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "Splice Alt Settings"
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "splice-alt@example.com",
+      "strict_min_version": "57.0"
+    }
+  }
+}
