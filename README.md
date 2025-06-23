@@ -1,6 +1,6 @@
 # Splice Alt - Automatic Sample Library Organizer
 
-A complete system for automatically organizing Splice samples into a structured library on download.
+A complete system for automatically organizing Splice samples into a structured library on download. Hopefully in time we will see a true Splice Desktop AppImage or something, but for now this is an alternative.
 
 ## 🎯 Overview
 
@@ -304,10 +304,6 @@ This project welcomes contributions! Areas for improvement:
 - GUI management interface
 - Performance optimizations
 - Documentation improvements
-
-## 📄 License
-
-[License to be determined]
 
 ## Disclaimer
 
