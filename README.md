@@ -268,9 +268,6 @@ CREATE INDEX idx_samples_tags ON samples(tags);
 ## 🔮 Future Enhancements
 
 - **Manual Tagging Interface**: GUI for correcting categorization
-- **Bitwig Integration**: Direct project browser integration
-- **Additional DAW Support**: Logic Pro, Ableton Live compatibility
-- **Cloud Sync**: Sync libraries across multiple machines
 - **Advanced Filtering**: Search by BPM, key, tags, etc.
 
 ## 📈 Development Status
