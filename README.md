@@ -14,10 +14,11 @@ Splice Alt consists of two components working together:
 - 🗂️ **Smart Organization**: Categorizes samples using Bitwig Studio's built-in categories  
 - 📊 **SQLite Database**: Stores metadata for fast searching and deduplication
 - 🏷️ **Tag-Based Mapping**: Automatically maps Splice tags to appropriate categories
-- 🚫 **Deduplication**: Prevents duplicate samples using file hashing
+- 🚫 **Smart Deduplication**: Prevents duplicate samples using file hashing with existence verification
 - ⚡ **Low Overhead**: Efficient and lightweight for constant background operation
-- 🔄 **Error Recovery**: Robust error handling with retry mechanisms
+- 🔄 **Error Recovery**: Robust error handling with retry mechanisms and structured logging
 - 🌐 **Browser Integration**: Seamless metadata capture from Splice website
+- 🎨 **User-Friendly**: Colorized terminal output and clear error messages
 
 ## 📂 Bitwig Categories
 
@@ -47,12 +48,16 @@ cd ../frontend
 ./package.sh
 
 # 3. Install extension in browser (drag .zip to chrome://extensions/)
-# 4. Start the daemon (background mode recommended)
-# Background mode (recommended)
+
+# 4. Start the daemon 
+# New unified approach (recommended)
+./target/release/splice-alt-daemon run --daemonize
+
+# Or traditional background start (backward compatible)
 ./target/release/splice-alt-daemon start
 
-# Or foreground mode
-./target/release/splice-alt-daemon watch
+# Or foreground mode for testing
+./target/release/splice-alt-daemon run
 
 # 5. Download samples from Splice.com - they'll be auto-organized!
 ```
@@ -119,11 +124,15 @@ echo 'alias splicealt="~/src/splice-alt/backend/target/release/splice-alt-daemon
 ### Basic Setup
 
 1. **Start the Daemon**:
-# Use default directories (watches ~/Downloads)
-./target/release/splice-alt-daemon watch
+```bash
+# New unified approach (recommended)
+./target/release/splice-alt-daemon run --daemonize
 
-# Or specify custom paths
-./target/release/splice-alt-daemon watch \
+# Or traditional background start (backward compatible)
+./target/release/splice-alt-daemon start
+
+# Or foreground mode with custom paths
+./target/release/splice-alt-daemon run \
   --watch-dir ~/Downloads \
   --library-dir ~/Music/Samples/SpliceLib \
   --database ~/.local/share/splice-alt/samples.db
@@ -143,6 +152,10 @@ echo 'alias splicealt="~/src/splice-alt/backend/target/release/splice-alt-daemon
 
 #### Start Background Daemon
 ```bash
+# New approach (recommended)
+./target/release/splice-alt-daemon run --daemonize
+
+# Traditional approach (backward compatible)
 ./target/release/splice-alt-daemon start
 ```
 
@@ -158,15 +171,15 @@ echo 'alias splicealt="~/src/splice-alt/backend/target/release/splice-alt-daemon
 
 The daemon will:
 - Run in the background without keeping a terminal open
-- Log activity to `~/.cache/splice-alt-daemon.log`
+- Log activity to `~/.cache/splice-alt-daemon.log` using structured logging
 - Store its process ID in `~/.cache/splice-alt-daemon.pid`
+- Provide colorized, user-friendly error messages
 - Automatically restart if the system reboots (when added to startup)
 
 **Note:** If you've set up an alias called `splicealt`, you can use shorter commands:
-- `splicealt start` instead of `./target/release/splice-alt-daemon start`
-- `splicealt stop` instead of `./target/release/splice-alt-daemon stop`
-- `splicealt status` instead of `./target/release/splice-alt-daemon status`
-
+- `splicealt run --daemonize` or `splicealt start`
+- `splicealt stop`
+- `splicealt status`
 
 ### Advanced Usage
 
@@ -202,6 +215,7 @@ Use `Ctrl+Shift+S` on Splice.com to toggle the debug status panel.
 - **Watch Directory**: `~/Downloads` (where browser downloads samples)
 - **Library Directory**: `~/Music/Samples/SpliceLib`  
 - **Database**: `~/.local/share/splice-alt/samples.db`
+- **Log File**: `~/.cache/splice-alt-daemon.log`
 
 ### Library Organization
 ```
@@ -250,23 +264,34 @@ Access via the extension popup:
 - Ensure daemon is running and watching correct directory
 - Check that both WAV and JSON files appear in downloads
 - Verify extension permissions for splice.com
+- Check the log file at `~/.cache/splice-alt-daemon.log` for detailed error messages
 
 **Database errors:**
 - Check database directory permissions
 - Ensure SQLite can write to the specified path
+- Database path is automatically created if parent directories don't exist
 
 **File permission errors:**
 - Verify write permissions for library directory
 - Check that daemon can access watch directory
+- Daemon uses safe file operations with verification
+
+**Daemon startup issues:**
+- Use `splicealt status` to check if daemon is already running
+- Check for PID file conflicts at `~/.cache/splice-alt-daemon.pid`
+- Daemon includes race condition protection for concurrent starts
 
 ### Error Recovery
 
-The daemon includes robust error handling:
+The daemon includes robust error handling with modern Rust practices:
+- **Structured Logging**: Detailed async-safe logging with tracing framework
 - **Automatic Retry**: Failed operations retry with exponential backoff
 - **File Validation**: Ensures files exist and are valid before processing
 - **Safe File Moving**: Copy-verify-delete pattern prevents data loss
 - **Database Recovery**: Retry mechanisms for database operations
-- **Duplicate Handling**: Automatic cleanup of duplicate files
+- **Smart Duplicate Handling**: Checks both database hash AND physical file existence
+- **Colorized Output**: User-friendly terminal messages with console crate
+- **Graceful Error Messages**: Clear error context using thiserror and anyhow
 
 ## 📊 Database Schema
 
@@ -312,13 +337,16 @@ CREATE INDEX idx_samples_tags ON samples(tags);
 ✅ **Production Ready**:
 - Core daemon architecture with file watching
 - Complete metadata parsing and validation
-- Database operations with deduplication
+- Database operations with smart deduplication
 - Library organization with Bitwig categories
 - Browser extension with webRequest API monitoring
-- Comprehensive error handling and recovery
+- Comprehensive error handling and recovery with modern Rust practices
 - Safe file operations with verification
 - Packaged extension for easy installation
 - All CLI commands implemented and tested
+- Structured async-safe logging with tracing
+- Enhanced enum parsing with strum
+- Colorized terminal output and user-friendly error messages
 
 🚧 **Future Enhancements**:
 - Enhanced tag mapping rules
@@ -335,6 +363,11 @@ CREATE INDEX idx_samples_tags ON samples(tags);
 - `tokio` - Async runtime with timeouts
 - `clap` - Command line parsing
 - `anyhow` - Error handling
+- `tracing` / `tracing-subscriber` / `tracing-appender` - Structured async-safe logging
+- `strum` - Enhanced enum parsing and serialization
+- `thiserror` - Structured error types
+- `console` - Colorized terminal output
+- `tempfile` - Temporary files for testing
 
 ### Frontend (Browser Extension)
 - Chrome Extensions Manifest V3
