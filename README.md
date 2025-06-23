@@ -31,7 +31,7 @@ The daemon automatically maps samples to these Bitwig-compatible categories:
 
 **Automated Installation:**
 ```bash
-git clone https://github.com/erelsop/splice-linux-helper.git
+git clone https://github.com/erelsop/splice-alt.git
 cd splice-linux-helper
 ./install.sh
 ```
@@ -65,7 +65,7 @@ cd ../backend
 ### 1. Build the Daemon
 
 ```bash
-git clone https://github.com/erelsop/splice-linux-helper.git
+git clone https://github.com/erelsop/splice-alt.git
 cd splice-linux-helper/backend
 cargo build --release
 
