@@ -121,6 +121,11 @@ impl FileWatcher {
         match event.kind {
             EventKind::Create(_) | EventKind::Modify(_) => {
                 for path in event.paths {
+                    // Early validation - skip if file doesn't exist
+                    if !path.exists() {
+                        continue;
+                    }
+                    
                     if let Some(extension) = path.extension() {
                         match extension.to_str() {
                             Some("wav") => {
@@ -169,6 +174,11 @@ impl FileWatcher {
     }
     
     async fn process_json_file(&self, json_path: &Path) -> Result<()> {
+        // Double-check file existence before processing
+        if !json_path.exists() {
+            return Err(anyhow::anyhow!("JSON file no longer exists: {:?}", json_path));
+        }
+        
         self.validate_file(json_path, "JSON")?;
         
         println!("🔍 Processing JSON file: {:?}", json_path);
@@ -228,12 +238,48 @@ impl FileWatcher {
         println!("🔐 Calculated file hash: {}", file_hash);
         
         // Check if this sample already exists in the database
-        if let Ok(Some(_existing)) = get_sample_by_hash(&self.database_path, &file_hash) {
-            println!("⚠️  Sample already exists in library (duplicate detected)");
+        if let Ok(Some(existing_record)) = get_sample_by_hash(&self.database_path, &file_hash) {
+            println!("🔍 Found existing database entry for this sample");
             
-            // Clean up duplicate files
-            self.cleanup_duplicate_files(wav_path, json_path).await?;
-            return Ok(());
+            // Verify if the physical file still exists
+            let existing_path = std::path::Path::new(&existing_record.file_path);
+            if existing_path.exists() && existing_path.is_file() {
+                println!("⚠️  Sample already exists in library (true duplicate detected)");
+                println!("   Existing file: {:?}", existing_path);
+                
+                // Clean up duplicate files
+                self.cleanup_duplicate_files(wav_path, json_path).await?;
+                return Ok(());
+            } else {
+                println!("🔄 Database entry exists but physical file is missing");
+                println!("   Missing file: {:?}", existing_path);
+                println!("   Updating database with new file location...");
+                
+                // The file was deleted but database entry remains
+                // Process normally but update the existing record instead of creating new one
+                let target_path = metadata.get_library_path(&self.library_dir);
+                println!("📍 New target path: {:?}", target_path);
+                
+                // Create target directory
+                if let Some(parent) = target_path.parent() {
+                    Self::ensure_directory(parent)?;
+                    println!("📁 Ensured directory: {:?}", parent);
+                }
+                
+                // Move file to new location
+                self.move_file_safely(wav_path, &target_path).await?;
+                println!("✅ Moved WAV file to: {:?}", target_path);
+                
+                // Update the existing database record with new path
+                crate::db::update_file_path(&self.database_path, &file_hash, &target_path.to_string_lossy())?;
+                println!("✅ Updated database record with new file path");
+                
+                // Clean up the JSON file
+                self.cleanup_metadata_file(json_path).await?;
+                
+                println!("🎉 Sample restored to library!\n");
+                return Ok(());
+            }
         }
         
         // Determine target library path

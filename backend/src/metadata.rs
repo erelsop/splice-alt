@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
+use strum::{EnumString, Display};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SampleMetadata {
@@ -75,7 +75,8 @@ pub struct Pack {
 }
 
 /// Bitwig Studio compatible categories
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, EnumString, Display)]
+#[strum(ascii_case_insensitive)]
 pub enum BitwigCategory {
     Bass,
     Bell,
@@ -83,8 +84,12 @@ pub enum BitwigCategory {
     Chip,
     Cymbal,
     Drone,
+    #[strum(serialize = "Drum Loop", to_string = "Drum Loop")]
+    #[strum(serialize = "drumloop", serialize = "drum loop")]
     DrumLoop,
     Guitar,
+    #[strum(serialize = "Hi-hat", to_string = "Hi-hat")]
+    #[strum(serialize = "hihat", serialize = "hi-hat")]
     HiHat,
     Keyboards,
     Kick,
@@ -92,11 +97,15 @@ pub enum BitwigCategory {
     Mallet,
     Orchestral,
     Organ,
+    #[strum(serialize = "Other Drums", to_string = "Other Drums")]
+    #[strum(serialize = "otherdrums", serialize = "other drums")]
     OtherDrums,
     Pad,
     Percussion,
     Piano,
     Snare,
+    #[strum(serialize = "Sound FX", to_string = "Sound FX")]
+    #[strum(serialize = "soundfx", serialize = "sound fx", serialize = "fx")]
     SoundFX,
     Strings,
     Synth,
@@ -107,75 +116,12 @@ pub enum BitwigCategory {
 }
 
 impl BitwigCategory {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            BitwigCategory::Bass => "Bass",
-            BitwigCategory::Bell => "Bell",
-            BitwigCategory::Brass => "Brass",
-            BitwigCategory::Chip => "Chip",
-            BitwigCategory::Cymbal => "Cymbal",
-            BitwigCategory::Drone => "Drone",
-            BitwigCategory::DrumLoop => "Drum Loop",
-            BitwigCategory::Guitar => "Guitar",
-            BitwigCategory::HiHat => "Hi-hat",
-            BitwigCategory::Keyboards => "Keyboards",
-            BitwigCategory::Kick => "Kick",
-            BitwigCategory::Lead => "Lead",
-            BitwigCategory::Mallet => "Mallet",
-            BitwigCategory::Orchestral => "Orchestral",
-            BitwigCategory::Organ => "Organ",
-            BitwigCategory::OtherDrums => "Other Drums",
-            BitwigCategory::Pad => "Pad",
-            BitwigCategory::Percussion => "Percussion",
-            BitwigCategory::Piano => "Piano",
-            BitwigCategory::Snare => "Snare",
-            BitwigCategory::SoundFX => "Sound FX",
-            BitwigCategory::Strings => "Strings",
-            BitwigCategory::Synth => "Synth",
-            BitwigCategory::Tom => "Tom",
-            BitwigCategory::Unknown => "Unknown",
-            BitwigCategory::Vocal => "Vocal",
-            BitwigCategory::Winds => "Winds",
-        }
+    pub fn as_str(&self) -> String {
+        self.to_string()
     }
 }
 
-impl FromStr for BitwigCategory {
-    type Err = String;
-    
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "bass" => Ok(BitwigCategory::Bass),
-            "bell" => Ok(BitwigCategory::Bell),
-            "brass" => Ok(BitwigCategory::Brass),
-            "chip" => Ok(BitwigCategory::Chip),
-            "cymbal" => Ok(BitwigCategory::Cymbal),
-            "drone" => Ok(BitwigCategory::Drone),
-            "drum loop" | "drumloop" => Ok(BitwigCategory::DrumLoop),
-            "guitar" => Ok(BitwigCategory::Guitar),
-            "hi-hat" | "hihat" => Ok(BitwigCategory::HiHat),
-            "keyboards" => Ok(BitwigCategory::Keyboards),
-            "kick" => Ok(BitwigCategory::Kick),
-            "lead" => Ok(BitwigCategory::Lead),
-            "mallet" => Ok(BitwigCategory::Mallet),
-            "orchestral" => Ok(BitwigCategory::Orchestral),
-            "organ" => Ok(BitwigCategory::Organ),
-            "other drums" | "otherdrums" => Ok(BitwigCategory::OtherDrums),
-            "pad" => Ok(BitwigCategory::Pad),
-            "percussion" => Ok(BitwigCategory::Percussion),
-            "piano" => Ok(BitwigCategory::Piano),
-            "snare" => Ok(BitwigCategory::Snare),
-            "sound fx" | "soundfx" | "fx" => Ok(BitwigCategory::SoundFX),
-            "strings" => Ok(BitwigCategory::Strings),
-            "synth" => Ok(BitwigCategory::Synth),
-            "tom" => Ok(BitwigCategory::Tom),
-            "unknown" => Ok(BitwigCategory::Unknown),
-            "vocal" => Ok(BitwigCategory::Vocal),
-            "winds" => Ok(BitwigCategory::Winds),
-            _ => Err(format!("Invalid category: {}", s)),
-        }
-    }
-}
+
 
 /// Maps Splice tags to Bitwig categories
 pub fn map_tags_to_category(tags: &[String]) -> BitwigCategory {
