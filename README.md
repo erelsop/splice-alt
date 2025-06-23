@@ -32,14 +32,14 @@ The daemon automatically maps samples to these Bitwig-compatible categories:
 **Automated Installation:**
 ```bash
 git clone https://github.com/erelsop/splice-alt.git
-cd splice-linux-helper
+cd splice-alt
 ./install.sh
 ```
 
 **Manual Steps:**
 ```bash
 # 1. Build the daemon
-cd splice-linux-helper/backend
+cd splice-alt/backend
 cargo build --release
 
 # 2. Package the browser extension
@@ -66,7 +66,7 @@ cd ../backend
 
 ```bash
 git clone https://github.com/erelsop/splice-alt.git
-cd splice-linux-helper/backend
+cd splice-alt/backend
 cargo build --release
 
 # Optional: Copy to system PATH
@@ -76,7 +76,7 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
 ### 2. Install Browser Extension
 
 #### Option A: Pre-packaged Extension (Recommended)
-1. Navigate to `splice-linux-helper/frontend/`
+1. Navigate to `splice-alt/frontend/`
 2. Run `./package.sh` to create the extension package
 3. Install the generated `.zip` file:
 
@@ -97,13 +97,13 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
 1. Open `chrome://extensions/`
 2. Enable "Developer mode"
 3. Click "Load unpacked"
-4. Select the `splice-linux-helper/frontend/` directory
+4. Select the `splice-alt/frontend/` directory
 
 **Firefox:**
 1. Open `about:debugging`
 2. Click "This Firefox"
 3. Click "Load Temporary Add-on"
-4. Select `splice-linux-helper/frontend/manifest.json`
+4. Select `splice-alt/frontend/manifest.json`
 
 ## 🎮 Usage
 
