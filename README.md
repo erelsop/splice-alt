@@ -290,7 +290,6 @@ CREATE INDEX idx_samples_tags ON samples(tags);
 - Enhanced tag mapping rules
 - Configuration file support
 - Performance optimizations
-- Web store distribution
 
 ## 🛠️ Dependencies
 
