@@ -12,5 +12,6 @@ sha2 = "0.10"
 tokio = { version = "1.0", features = ["full"] }
 anyhow = "1.0"
 clap = { version = "4.4", features = ["derive"] }
-dirs = "5.0" daemonize = "0.5"
-nix = "0.27"
+dirs = "5.0"
+daemonize = "0.5"
+nix = { version = "0.27", features = ["process", "signal"] }

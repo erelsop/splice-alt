@@ -49,10 +49,9 @@ cd ../frontend
 # 3. Install extension in browser (drag .zip to chrome://extensions/)
 # 4. Start the daemon (background mode recommended)
 # Background mode (recommended)
-splice-alt-daemon --start
+./target/release/splice-alt-daemon start
 
 # Or foreground mode
-cd ../backend
 ./target/release/splice-alt-daemon watch
 
 # 5. Download samples from Splice.com - they'll be auto-organized!
@@ -73,22 +72,21 @@ git clone https://github.com/erelsop/splice-alt.git
 cd splice-alt/backend
 cargo build --release
 
-# Optional: Copy to system PATH
+# Optional: Copy to system PATH for easier access
 sudo cp target/release/splice-alt-daemon /usr/local/bin/
+
+# Or create an alias (add to your ~/.bashrc or ~/.zshrc)
+echo 'alias splicealt="~/src/splice-alt/backend/target/release/splice-alt-daemon"' >> ~/.zshrc
 ```
 
 ### 2. Install Browser Extension
+
+> **📝 Browser Compatibility Note:** Firefox has been the primary development and testing focus. Chromium-based browsers (Chrome, Edge, etc.) have had minimal testing and may have compatibility issues. Firefox is recommended for the most stable experience.
 
 #### Option A: Pre-packaged Extension (Recommended)
 1. Navigate to `splice-alt/frontend/`
 2. Run `./package.sh` to create the extension package
 3. Install the generated `.zip` file:
-
-**Chrome/Chromium/Edge:**
-- Open `chrome://extensions/`
-- Enable "Developer mode"
-- Drag and drop `splice-alt-extension-v1.0.0.zip` onto the page
-- OR click "Load unpacked" and select the `frontend/` directory
 
 **Firefox:**
 - Open `about:debugging`
@@ -96,18 +94,25 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
 - Click "Load Temporary Add-on"
 - Select `manifest.json` from the extracted package
 
+**Chromium:**
+- Open `chrome://extensions/`
+- Enable "Developer mode"
+- Drag and drop `splice-alt-extension-v1.0.0.zip` onto the page
+- OR click "Load unpacked" and select the `frontend/` directory
+
 #### Option B: Developer Mode (Manual)
-**Chrome/Chromium:**
-1. Open `chrome://extensions/`
-2. Enable "Developer mode"
-3. Click "Load unpacked"
-4. Select the `splice-alt/frontend/` directory
 
 **Firefox:**
 1. Open `about:debugging`
 2. Click "This Firefox"
 3. Click "Load Temporary Add-on"
 4. Select `splice-alt/frontend/manifest.json`
+
+**Chromium:**
+1. Open `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked"
+4. Select the `splice-alt/frontend/` directory
 
 ## 🎮 Usage
 
@@ -138,17 +143,17 @@ sudo cp target/release/splice-alt-daemon /usr/local/bin/
 
 #### Start Background Daemon
 ```bash
-splice-alt-daemon --start
+./target/release/splice-alt-daemon start
 ```
 
 #### Stop Background Daemon
 ```bash
-splice-alt-daemon --stop
+./target/release/splice-alt-daemon stop
 ```
 
 #### Check Daemon Status
 ```bash
-splice-alt-daemon --status
+./target/release/splice-alt-daemon status
 ```
 
 The daemon will:
@@ -156,6 +161,11 @@ The daemon will:
 - Log activity to `~/.cache/splice-alt-daemon.log`
 - Store its process ID in `~/.cache/splice-alt-daemon.pid`
 - Automatically restart if the system reboots (when added to startup)
+
+**Note:** If you've set up an alias called `splicealt`, you can use shorter commands:
+- `splicealt start` instead of `./target/release/splice-alt-daemon start`
+- `splicealt stop` instead of `./target/release/splice-alt-daemon stop`
+- `splicealt status` instead of `./target/release/splice-alt-daemon status`
 
 
 ### Advanced Usage

@@ -237,7 +237,7 @@ impl FileWatcher {
         }
         
         // Determine target library path
-        let target_path = self.generate_library_path(&metadata)?;
+        let target_path = metadata.get_library_path(&self.library_dir);
         println!("📍 Target path: {:?}", target_path);
         
         // Create target directory with proper error handling
@@ -375,39 +375,7 @@ impl FileWatcher {
         Ok(())
     }
     
-    fn generate_library_path(&self, metadata: &SampleMetadata) -> Result<PathBuf> {
-        let category = metadata.get_category();
-        let pack_name = &metadata.sample_meta_data.pack.name;
-        let filename = &metadata.sample_meta_data.filename;
-        
-        // Sanitize pack name for filesystem
-        let safe_pack_name = self.sanitize_filename(pack_name);
-        
-        let path = self.library_dir
-            .join(category.as_str())
-            .join(safe_pack_name)
-            .join(filename);
-            
-        Ok(path)
-    }
-    
-    fn sanitize_filename(&self, name: &str) -> String {
-        // Replace problematic characters with safe alternatives
-        name.chars()
-            .filter_map(|c| match c {
-                '/' | '\\' => Some('-'),
-                ':' => Some('-'),
-                '*' | '?' | '\0' => None, // Remove these characters entirely
-                '"' => Some('\''),
-                '<' | '>' => Some('-'),
-                '|' => Some('-'),
-                c if c.is_control() => Some('_'),
-                c => Some(c),
-            })
-            .collect::<String>()
-            .trim()
-            .to_string()
-    }
+
 }
 
 // Make SampleRecord cloneable for retry operations
@@ -435,4 +403,35 @@ impl Clone for crate::db::SampleRecord {
             asset_uuid: self.asset_uuid.clone(),
         }
     }
+}
+
+// Public API functions for main.rs
+
+pub async fn watch_directory(
+    watch_dir: &Path, 
+    library_dir: &Path, 
+    database_path: &Path
+) -> Result<()> {
+    let mut watcher = FileWatcher::new(
+        watch_dir.to_path_buf(),
+        library_dir.to_path_buf(),
+        database_path.to_path_buf(),
+    )?;
+    
+    watcher.start_watching().await
+}
+
+pub async fn process_sample_pair(
+    wav_path: &Path,
+    json_path: &Path,
+    library_dir: &Path,
+    database_path: &Path,
+) -> Result<()> {
+    let watcher = FileWatcher::new(
+        PathBuf::from("/tmp"), // Dummy watch dir since we're not watching
+        library_dir.to_path_buf(),
+        database_path.to_path_buf(),
+    )?;
+    
+    watcher.process_sample_pair_public(wav_path, json_path).await
 } 

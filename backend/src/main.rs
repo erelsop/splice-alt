@@ -126,7 +126,7 @@ fn remove_pid_file() -> Result<()> {
 }
 
 fn is_process_running(pid: u32) -> bool {
-    use nix::sys::signal::{self, Signal};
+    use nix::sys::signal;
     use nix::unistd::Pid;
     
     match signal::kill(Pid::from_raw(pid as i32), None) {
@@ -192,7 +192,7 @@ fn start_daemon(args: Args) -> Result<()> {
     if is_process_running(pid) {
         println!("✅ Daemon started successfully (PID: {})", pid);
         println!("   Monitor logs: tail -f {:?}", log_file);
-        println!("   Stop daemon: {} --stop", executable.file_name().unwrap().to_string_lossy());
+        println!("   Stop daemon: {} stop", executable.file_name().unwrap().to_string_lossy());
     } else {
         println!("❌ Daemon failed to start. Check logs: {:?}", log_file);
         let _ = remove_pid_file();
@@ -489,14 +489,14 @@ async fn test_metadata_parsing(metadata_file: &PathBuf) -> Result<()> {
     match serde_json::from_str::<metadata::SampleMetadata>(&content) {
         Ok(metadata) => {
             println!("✅ Successfully parsed metadata:");
-            println!("📦 Pack: {}", metadata.sample.pack.name);
-            println!("🎵 File: {}", metadata.sample.name);
-            println!("🎯 BPM: {:?}", metadata.sample.bpm);
-            println!("🎼 Key: {:?}", metadata.sample.key);
-            println!("🏷️  Tags: {:?}", metadata.sample.tags);
+            println!("📦 Pack: {}", metadata.sample_meta_data.pack.name);
+            println!("🎵 File: {}", metadata.sample_meta_data.filename);
+            println!("🎯 BPM: {:?}", metadata.sample_meta_data.bpm);
+            println!("🎼 Key: {:?}", metadata.sample_meta_data.audio_key);
+            println!("🏷️  Tags: {:?}", metadata.sample_meta_data.tags);
             
             // Test category mapping
-            let category = metadata::map_tags_to_category(&metadata.sample.tags);
+            let category = metadata::map_tags_to_category(&metadata.sample_meta_data.tags);
             println!("📂 Mapped category: {}", category.as_str());
         }
         Err(e) => {
@@ -515,8 +515,7 @@ async fn run_daemon(args: Args) -> Result<()> {
     
     let library_dir = args.library_dir.unwrap_or_else(|| {
         dirs::audio_dir()
-            .unwrap_or_else(|| dirs::home_dir().unwrap_or_else(|| PathBuf::from(".")))
-            .join("Music")
+            .unwrap_or_else(|| dirs::home_dir().unwrap_or_else(|| PathBuf::from(".")).join("Music"))
             .join("Samples")
             .join("SpliceLib")
     });

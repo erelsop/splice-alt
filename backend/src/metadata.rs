@@ -239,9 +239,31 @@ impl SampleMetadata {
         let pack_name = &self.sample_meta_data.pack.name;
         let filename = &self.sample_meta_data.filename;
         
+        // Sanitize pack name for filesystem
+        let safe_pack_name = sanitize_filename(pack_name);
+        
         library_base
             .join(category.as_str())
-            .join(pack_name)
+            .join(safe_pack_name)
             .join(filename)
     }
+}
+
+/// Sanitize a filename by replacing problematic characters with safe alternatives
+pub fn sanitize_filename(name: &str) -> String {
+    // Replace problematic characters with safe alternatives
+    name.chars()
+        .filter_map(|c| match c {
+            '/' | '\\' => Some('-'),
+            ':' => Some('-'),
+            '*' | '?' | '\0' => None, // Remove these characters entirely
+            '"' => Some('\''),
+            '<' | '>' => Some('-'),
+            '|' => Some('-'),
+            c if c.is_control() => Some('_'),
+            c => Some(c),
+        })
+        .collect::<String>()
+        .trim()
+        .to_string()
 } 
